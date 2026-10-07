@@ -1,8 +1,10 @@
 services:
   
-  default_db:
+  db:
   
     image: postgres:17-alpine
+    cap_drop:
+      - ALL
     environment:
       POSTGRES_USER: liveyourlife
       POSTGRES_PASSWORD: liveyourlife
@@ -18,13 +20,15 @@ services:
       timeout: 5s
       retries: 5
 
-  default_backend:
+  backend:
     image: lyl-backend:latest
     build:
       context: ./backend
       dockerfile: LYL.Api/Dockerfile
     ports:
       - "5187:8080"
+    cap_drop:
+      - ALL
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
       - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=liveyourlife;Username=liveyourlife;Password=liveyourlife
@@ -34,9 +38,11 @@ services:
       db:
         condition: service_healthy
 
-  default_frontend:
+  frontend:
   
     image: lyl-frontend:latest
+    cap_drop:
+      - ALL
     build:
       context: ./frontend
       args:
