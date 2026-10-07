@@ -29,6 +29,7 @@ Create `frontend/.env`:
 
 ```
 VITE_API_BASE_URL=http://localhost:5209
+POSTGRES_PASSWORD=liveyourlife
 ```
 
 ```bash
@@ -37,8 +38,6 @@ yarn install
 # or: npm install --legacy-peer-deps
 npm run dev
 ```
-
-Create .env file in the project root with "POSTGRES_PASSWORD=liveyourlife". The .env file should not be committed.  
 
 UI: http://localhost:5173/home
 
