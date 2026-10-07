@@ -47,3 +47,8 @@ liveyourlife.tar
 # Sigrid CI
 sigrid-ci-output/
 sigridci/
+
+# Visual Studio (IDE)
+**/.vs/
+*.suo
+*.user
