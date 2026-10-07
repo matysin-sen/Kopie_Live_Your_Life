@@ -38,6 +38,8 @@ yarn install
 npm run dev
 ```
 
+Create .env file in the project root with "POSTGRES_PASSWORD=liveyourlife". The .env file should not be committed.  
+
 UI: http://localhost:5173/home
 
 Start the API before the UI. If SignalR fails, refresh the page.
