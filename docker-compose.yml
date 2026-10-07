@@ -1,6 +1,7 @@
 services:
-  default_service:
-  db:
+  
+  default_db:
+  
     image: postgres:17-alpine
     environment:
       POSTGRES_USER: liveyourlife
@@ -17,7 +18,7 @@ services:
       timeout: 5s
       retries: 5
 
-  backend:
+  default_backend:
     image: lyl-backend:latest
     build:
       context: ./backend
@@ -33,7 +34,8 @@ services:
       db:
         condition: service_healthy
 
-  frontend:
+  default_frontend:
+  
     image: lyl-frontend:latest
     build:
       context: ./frontend
