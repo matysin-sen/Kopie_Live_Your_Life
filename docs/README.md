@@ -5,6 +5,7 @@ You need **Node 22**, **.NET 10**, and **PostgreSQL on port 9999**.
 Do not use `docker compose` for local play.
 
 ## Database
+## postgresSQL user = postgres ww = liveyourlife
 
 User / database / password: `liveyourlife`
 
