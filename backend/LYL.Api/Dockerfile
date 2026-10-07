@@ -20,7 +20,9 @@ RUN dotnet publish LYL.Api/LYL.Api.csproj -c Release -o /app/publish --no-restor
 
 FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS runtime
 WORKDIR /app
-COPY --from=build /app/publish .
+COPY --chown=app:app --from=build /app/publish .
+# is voldoende voor dotnet om user toe te voegen (geen voorgebouwde image nodig mits dit al een veilige configuratie heeft/maakt)
+USER app
 EXPOSE 8080
 ENV ASPNETCORE_HTTP_PORTS=8080
 ENTRYPOINT ["dotnet", "LYL.Api.dll"]
