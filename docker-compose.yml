@@ -7,7 +7,7 @@ services:
       - ALL
     environment:
       POSTGRES_USER: liveyourlife
-      POSTGRES_PASSWORD: liveyourlife
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
       POSTGRES_DB: liveyourlife
     ports:
       - "9999:5432"
@@ -31,7 +31,7 @@ services:
       - ALL
     environment:
       - ASPNETCORE_ENVIRONMENT=Production
-      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=liveyourlife;Username=liveyourlife;Password=liveyourlife
+      - ConnectionStrings__DefaultConnection=Host=db;Port=5432;Database=liveyourlife;Username=liveyourlife;Password=${POSTGRES_PASSWORD}
       - Cors__AllowedOrigins=http://cigritdev.fortiddns.com:21001,http://localhost:8888
       - Supervisor__Pin=${SUPERVISOR_PIN:-0420}
     depends_on:
@@ -48,7 +48,7 @@ services:
       args:
         VITE_API_BASE_URL: http://cigritdev.fortiddns.com:21002
     ports:
-      - "8888:80"
+      - "8888:8080"
     depends_on:
       - backend
 

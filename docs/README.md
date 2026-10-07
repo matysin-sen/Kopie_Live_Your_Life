@@ -30,6 +30,7 @@ Create `frontend/.env`:
 
 ```
 VITE_API_BASE_URL=http://localhost:5209
+POSTGRES_PASSWORD=liveyourlife
 ```
 
 ```bash
