@@ -6,7 +6,7 @@ export interface CharacterProfile {
   interestKey: string;
   infoKey: string;
   experienceKey: string;
-  parentalSupportKey: string;
+  parentalSupportKey: number;
   experienceInMonths: number;
 }
 
