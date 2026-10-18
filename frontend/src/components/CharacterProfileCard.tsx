@@ -163,7 +163,7 @@ const CharacterProfileCard = ({
                 {t("profile_labels.parental_support")}
               </td>
               <td className="extra-value phase-1-value pre-line">
-                {profile.parentalSupportKey
+                {profile.parentalSupportKey > 0
                   ? `€ ${profile.parentalSupportKey.toLocaleString("nl-BE")}`
                   : "/"}
               </td>
