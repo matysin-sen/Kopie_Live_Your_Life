@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
+//import i18n from "../i18n";
 import { useSignalR } from "../hooks/useSignalR";
 import { useNavigate } from "react-router-dom";
 import type { JoinTableRequest } from "../types/Requests";
@@ -9,7 +10,7 @@ import React from "react";
 
 const HomePlayerPage = () => {
   console.log("does the deployment script actually work?");
-  const { t } = useTranslation();
+  const { t, i18n: translationInstance } = useTranslation();
   const [roomCode, setRoomCode] = useState<string | null>(() =>
     localStorage.getItem("roomCode"),
   );
@@ -31,6 +32,10 @@ const HomePlayerPage = () => {
       ? { room: savedRoom, id: savedPlayerId }
       : null;
   });
+
+  const handleLanguageChange = (event: React.ChangeEvent<HTMLSelectElement>,) => {
+  translationInstance.changeLanguage(event.target.value);
+};
 
   const connection = useSignalR();
   const navigate = useNavigate();
@@ -100,6 +105,15 @@ const HomePlayerPage = () => {
   return (
     <div className="min-h-screen bg-slate-100 flex items-center justify-center p-6 font-sans">
       <div className="bg-white max-w-md w-full rounded-[2.5rem] shadow-xl border-2 border-teal-50 p-8 sm:p-10 text-center">
+      <div className="flex justify-end mb-4">
+      <select id="language-select" value={translationInstance.resolvedLanguage ?? translationInstance.language}
+      onChange={handleLanguageChange}
+      className="border border-teal-200 rounded-lg px-3 py-2 text-sm font-semibold text-teal-800 bg-white cursor-pointer focus:outline-none focus:ring-2 focus:ring-teal-500">
+        <option value="nl">Nederlands</option>
+        <option value="en">English</option>
+        <option value="fr">Français</option>
+      </select>
+      </div>
         <h1 className="text-4xl font-black text-teal-800 mb-2 tracking-tight">
           LIV<span className="text-amber-500">€</span> YOUR LIF
           <span className="text-amber-500">€</span>
