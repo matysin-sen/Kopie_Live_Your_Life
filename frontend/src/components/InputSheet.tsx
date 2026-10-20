@@ -672,12 +672,12 @@ const InputSheet = ({
                       prefix="+"
                     />
                   </CalcRow>
-                  <CalcRow label={t("factor")} sub={t("factor_sub")}>
+                  <CalcRow label={ `${t("factor")} / ${character.profile.phase1Factor}:` } sub={t("factor_sub")}>
                     <CalcInput
                       name="calc_p1_factor"
                       formik={formik}
                       readOnly={p1CalcReadOnly}
-                      prefix="/2 ="
+                      prefix={ `/${character.profile.phase1Factor} =` }
                     />
                   </CalcRow>
                   <CalcRow
@@ -796,7 +796,7 @@ const InputSheet = ({
                     prefix="-"
                   />
                 </CalcRow>
-                <CalcRow label={t("total3")} sub={t("total3_sub")}>
+                <CalcRow label={ `${t("total3")} / ${character.profile.phase2Factor }`} sub={t("total3_sub")}>
                   <CalcInput
                     name="calc_p2_total3"
                     formik={formik}
