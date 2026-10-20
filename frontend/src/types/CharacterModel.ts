@@ -8,6 +8,8 @@ export interface CharacterProfile {
   experienceKey: string;
   parentalSupportKey: number;
   experienceInMonths: number;
+  phase1factor: number,
+  phase2factor: number
 }
 
 export interface StudentCategory {
