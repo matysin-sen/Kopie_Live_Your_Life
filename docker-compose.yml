@@ -11,6 +11,8 @@ services:
       POSTGRES_DB: liveyourlife
     ports:
       - "9999:5432"
+    security_opt:
+      - no-new-privileges:true
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql
@@ -27,6 +29,9 @@ services:
       dockerfile: LYL.Api/Dockerfile
     ports:
       - "5187:8080"
+    # Haalt melding weg van security_opt en zorgt voor een klein beetje extra beveiliging
+    security_opt:
+      - no-new-privileges:true
     cap_drop:
       - ALL
     environment:
@@ -48,6 +53,9 @@ services:
       args:
         VITE_API_BASE_URL: http://cigritdev.fortiddns.com:21002
     ports:
+      - "8888:80"
+    security_opt:
+      - no-new-privileges:true
       - "8888:8080"
     depends_on:
       - backend
