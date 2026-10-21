@@ -56,7 +56,7 @@ public class FirstWorkphaseState(Dossier dossier, IMemoryAccessService service) 
         if (data.HospitalisationInsuranceCost != null && data.HospitalisationInsuranceCost != 0m)
         {
             var result = service.GetHospitalisationInsurance();
-            resultCheck &= data.HospitalisationInsuranceCost == result.adult ;
+            resultCheck &= data.HospitalisationInsuranceCost == result.adult;
         }
 
         //Accident insurance: price is correct: int => bool
@@ -109,7 +109,7 @@ public class FirstWorkphaseState(Dossier dossier, IMemoryAccessService service) 
         return false;
     }
 
-    public override bool CheckCalculationPhase(DossierData data, Player player,  IInvestmentCalculator calculator)
+    public override bool CheckCalculationPhase(DossierData data, Player player, IInvestmentCalculator calculator)
     {
         bool resultCheck = true;
 
@@ -135,7 +135,7 @@ public class FirstWorkphaseState(Dossier dossier, IMemoryAccessService service) 
         //Financial support parents
         //TODO: Rik-problem
         resultCheck &= data.ParentalSupport.GetValueOrDefault() ==
-                       ParseParentalSupport(Dossier.Character.Profile.ParentalSupportKey);
+                       (decimal)Dossier.Character.Profile.ParentalSupportKey;
 
 
         //Factor
