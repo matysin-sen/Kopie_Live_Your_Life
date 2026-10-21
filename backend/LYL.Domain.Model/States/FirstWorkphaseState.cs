@@ -141,7 +141,7 @@ public class FirstWorkphaseState(Dossier dossier, IMemoryAccessService service) 
         //Factor
         resultCheck &= data.Factor == (data.CalcRemainingBudgetWholePhase1
                                        + data.StudentJobIncome.GetValueOrDefault())
-            / 2;
+            / Dossier.Character.Profile.Phase1Factor;
 
         //Total
         resultCheck &= data.Total1 ==
@@ -173,16 +173,5 @@ public class FirstWorkphaseState(Dossier dossier, IMemoryAccessService service) 
     public override bool CheckEventCardsInputAndTotal4(DossierData data, Player player)
     {
         return true; // moet niet geimplementeerd worden hier!
-    }
-
-    public decimal ParseParentalSupport(string parentalSupport)
-    {
-        if (string.IsNullOrEmpty(parentalSupport) || parentalSupport.Trim() == "/")
-        {
-            return 0m;
-        }
-
-        var culture = new CultureInfo("nl-BE"); //Hardcoded, assuming the culture won't change
-        return decimal.Parse(parentalSupport, NumberStyles.Currency, culture);
     }
 }

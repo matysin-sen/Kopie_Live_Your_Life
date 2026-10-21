@@ -183,7 +183,9 @@
     "children": "NUMBER OF CHILDREN",
     "partner_support": "PARTNER'S (PARENTAL) SUPPORT",
     "phase_1_small": "First working phase",
-    "phase_2_small": "Second working phase"
+    "phase_2_small": "Second working phase",
+    "phase_1_factor": "• Phase 1 factor",
+    "phase_2_factor": "• Phase 2 factor"
   },
   "home_player_page": {
     "title": "Join a Game",

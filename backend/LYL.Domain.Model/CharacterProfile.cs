@@ -11,6 +11,8 @@ public class CharacterProfile
     [JsonPropertyName("educationKey")] public string EducationKey { get; set; }
     [JsonPropertyName("interestKey")] public string InterestKey { get; set; }
     [JsonPropertyName("infoKey")] public string InfoKey { get; set; }
+    [JsonPropertyName("phase1Factor")] public decimal Phase1Factor { get; set; }
+    [JsonPropertyName("phase2Factor")] public decimal Phase2Factor { get; set; }
     [JsonPropertyName("experienceKey")] public string ExperienceKey { get; set; }
     [JsonPropertyName("parentalSupportKey")] public int ParentalSupportKey { get; set; }
     [JsonPropertyName("experienceInMonths")] public int ExperienceInMonths { get; set; }

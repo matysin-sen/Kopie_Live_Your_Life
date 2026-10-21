@@ -63,7 +63,11 @@ const CharacterProfileCard = ({
               </tr>
               <tr>
                 <td className="info-label">{t("profile_labels.info")}</td>
-                <td className="info-value pre-line">{t(profile.infoKey)}</td>
+                <td className="info-value pre-line">
+                  <p>{t(profile.infoKey)}</p>
+                  <p>{t("profile_labels.phase_1_factor")}: {profile.phase1Factor}</p>
+                  <p>{t("profile_labels.phase_2_factor")}: {profile.phase2Factor}</p>
+                </td>
               </tr>
               <tr>
                 <td className="info-label highlight-label">
@@ -172,13 +176,13 @@ const CharacterProfileCard = ({
               <td className="extra-label phase-2-label pre-line">
                 {t("profile_labels.children")}
               </td>
-              <td className="extra-value phase-2-value"></td>
+              <td className="extra-value phase-2-value">{ character.livingSituation.isShown ? `${character.livingSituation.children}` : "" }</td>
             </tr>
             <tr>
               <td className="extra-label phase-2-label pre-line">
                 {t("profile_labels.partner_support")}
               </td>
-              <td className="extra-value phase-2-value"></td>
+              <td className="extra-value phase-2-value">{ character.livingSituation.isShown ? `€ ${character.livingSituation.partner.savings.toLocaleString("nl-BE")}` : "" }</td>
             </tr>
           </tbody>
         </table>

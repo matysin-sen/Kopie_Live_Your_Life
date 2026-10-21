@@ -183,7 +183,9 @@
     "partner_support": "STEUN (OUDERS) PARTNER",
     "partner_wage": "MAANDLOON PARTNER",
     "phase_1_small": "Eerste werkfase",
-    "phase_2_small": "Tweede werkfase"
+    "phase_2_small": "Tweede werkfase",
+    "phase_1_factor": "• Factor fase 1",
+    "phase_2_factor": "• Factor fase 2"
   },
 
   "home_player_page": {

@@ -22,7 +22,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
 
         //Housing: price exists: int (monthly loan/monthly) => string (house_id), string (buy/rent)
         string? house_id = service.GetHouseId(data.HousingCost);
-        if (house_id == "rent_social") 
+        if (house_id == "rent_social")
         {
             decimal totalSalary = data.NetSalary + data.NetSalaryPartner.GetValueOrDefault();
             resultCheck &= CheckSocialHousingCondition(totalSalary, children);
@@ -41,7 +41,8 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             needsCar = result.needsCar;
             resultCheck &= result.startBudget <= Dossier.firstWorkphaseDossier.Total1 + Dossier.LivingSituation.Partner.Savings;
             //TODO: buy conditions (up to 40% of salary may be used to repay the loan)
-        } else if (!string.IsNullOrEmpty(house_id))
+        }
+        else if (!string.IsNullOrEmpty(house_id))
         {
             var result = service.GetHouseInfoRent(house_id);
             resultCheck &= result.maxSpace >= adults + children;
@@ -50,12 +51,12 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             //TODO 100 is hardcoded for no reason, needs to come from database, but 100 is high enough inflation won't have impact anytime soon
         }
         else return false;
-        
+
 
         //Other living expenses: price is correct: int price, string house_id, int children, bool hasPartner => bool
-        resultCheck &= service.CheckLivingExpense(data.OtherLivingCost, house_id, 
+        resultCheck &= service.CheckLivingExpense(data.OtherLivingCost, house_id,
                 children, adults > 1);
-        
+
         //Transport: monthly purchase amount: int price => int (check equal to monthly cost), int seats
         //=> check living situation
         (decimal monthlyCarCost, bool isSport, int seats) = service.GetCarInfo(data.TransportPurchaseCost, adults + children);
@@ -63,7 +64,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
         if (seats == 1) monthlyCarCost *= (adults + children);
         resultCheck &= monthlyCarCost == data.TransportMonthlyCost;
         if (needsCar) resultCheck &= seats >= adults + children;
-        
+
 
         //Alle volgende velden kijken indien ingevuld
 
@@ -88,8 +89,8 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
         if (data.HospitalisationInsuranceCost != null && data.HospitalisationInsuranceCost != 0m)
         {
             var insurance = service.GetHospitalisationInsurance();
-            var result = insurance.adult * adults + insurance.child * children ; 
-            resultCheck &= data.HospitalisationInsuranceCost == result ;
+            var result = insurance.adult * adults + insurance.child * children;
+            resultCheck &= data.HospitalisationInsuranceCost == result;
         }
         //Accident insurance: look at living sit. => calculate pp => price is correct: int => bool
         if (data.AccidentInsuranceCost != null && data.AccidentInsuranceCost != 0m)
@@ -107,7 +108,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
         if (resultCheck) // alle gegevens in order?
         {
             //uitrekenen balance
-            var balance = data.NetSalary 
+            var balance = data.NetSalary
                         + data.NetSalaryPartner.GetValueOrDefault()
                         - data.HousingCost
                         - data.OtherLivingCost
@@ -123,12 +124,12 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 if (player.DossierState is SecondWorkphaseState) //opslaan van data
                 {
-                    Dossier.secondWorkphaseDossier = data; 
+                    Dossier.secondWorkphaseDossier = data;
                     isChecked = true;
                     //TODO: opslaan insurances
                 }
                 else throw new Exception("Invalid state");
-                
+
                 return true;
             }
         }
@@ -173,16 +174,16 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
 
         //Subtotal 3 / factor phase 2 = total 3
         resultCheck &= data.Total3 == (data.Total2
-                                       - data.HousingPurchaseCost.GetValueOrDefault())/2;
+                                       - data.HousingPurchaseCost.GetValueOrDefault()) / Dossier.Character.Profile.Phase2Factor;
         //TODO: factor?
         Console.WriteLine(resultCheck);
-    
+
         isChecked &= resultCheck;
         if (player.DossierState is SecondWorkphaseState)
-                {
-                    Dossier.secondWorkphaseDossier = data;
-                }
-                else throw new Exception("Invalid state");
+        {
+            Dossier.secondWorkphaseDossier = data;
+        }
+        else throw new Exception("Invalid state");
 
         try
         {
@@ -190,15 +191,16 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             resultCheck &= testresult;
             Console.WriteLine("cards: " + testresult);
         }
-        catch {
+        catch
+        {
             Console.WriteLine("foutje");
         }
-        
+
         //checks laatste velden onderste tabel
         resultCheck &= CheckSavingsAccountCalc(data, player);
         resultCheck &= CheckInvestmentCalc(data, player, calculator);
         resultCheck &= CheckTotal5Calc(data, player);
-        
+
         return resultCheck;
     }
 
@@ -211,20 +213,20 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
 
     private bool CheckSavingsAccountCalc(DossierData data, Player player)
     {
-        
+
         double interestRate = 0.01; //todo flexibel binnenhalen
         double years = 20;
         if (data.SavingsAccount == null) return false;
         double principal = (double)data.SavingsAccount;
-    
-       
+
+
         double totalAmount = principal * Math.Pow(1 + interestRate, years);
         double profit = totalAmount - principal;
-        
-        double marge = 0.05; 
+
+        double marge = 0.05;
         if (data.ReturnSavings == null) return false;
         var correct = Math.Abs(profit - (double)data.ReturnSavings) <= marge;
-    
+
         return correct;
     }
 
@@ -235,20 +237,20 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
         int years = 20;
         decimal rate = 0.06m; //todo flexibel binnenhalen
         decimal inflation = 0.02m;
-        decimal marge = 0.05m; 
-        
+        decimal marge = 0.05m;
+
         if (data.Investment == null) return false;
-        var returnment = calculator.CalculateReturn((decimal)data.Investment, rate, years );
+        var returnment = calculator.CalculateReturn((decimal)data.Investment, rate, years);
         check &= Math.Abs((decimal)(returnment - data.ReturnInvestment)) <= marge;
-        
+
         if (data.Total3 == null) return false;
-        var inflationImpact = calculator.CalculateInflationImpact((decimal)data.Total3, inflation,  years );
-        
-        
+        var inflationImpact = calculator.CalculateInflationImpact((decimal)data.Total3, inflation, years);
+
+
         if (data.InflationImpact == null) return false;
         var inflImpactRobust = data.InflationImpact < 0 ? data.InflationImpact * -1 : data.InflationImpact; //check if user added - we have to correct this or it will always say false
         check &= Math.Abs((decimal)(inflationImpact * (-1) - inflImpactRobust)) <= marge;
-        
+
         return check;
     }
 
@@ -257,18 +259,18 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
         //TODO er is geen volgende fase: zou bij uitbreiding de stap naar de samenvatting kunnen zijn of einde game melding!
         throw new NotImplementedException();
     }
-    
-    
+
+
     public override bool CheckEventCardsInputAndTotal4(DossierData data, Player player)
     {
         //TODO testen!!!
-        
+
         bool result = true;
         decimal? totalImpactEventCards = 0;
-        
+
         var eventcardsChoices = player.Dossier.ChoosenEventCards.Choices;
         if (eventcardsChoices.Count == 0) throw new Exception("No eventcards choosen or saved");
-        
+
         var allEventcards = service.GetAllEventCards();
         //TODO elke apart eventcard overlopen
 
@@ -280,7 +282,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
                 0 => data.Event1Impact,
                 1 => data.Event2Impact,
                 2 => data.Event3Impact,
-                _ => null 
+                _ => null
             };
 
             if (id == "second_car")
@@ -298,23 +300,23 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
 
                 result &= player.Dossier.secondWorkphaseDossier.NetSalaryPartner ==
                           ((dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal);
-               totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
+                totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
             }
 
             if (id == "car_accident_parked")
             {
                 var card = allEventcards.Find(x => x.Id == "car_accident_parked");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var choosenInsuranceDecimal = player.Dossier.secondWorkphaseDossier.TransportInsuranceCost;
 
                 //TODO getinsurances methods waardoor deze flexibel worden ingeladen
                 //check which insurance player has (normal || sportscar)
-                if (choosenInsuranceDecimal is 25 or 50 )
+                if (choosenInsuranceDecimal is 25 or 50)
                 {
                     //special check in case user writes negative or positive in frontend
-                     result &= card.Options[0].Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
-                     totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
+                    result &= card.Options[0].Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
+                    totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
                 }
                 else if (choosenInsuranceDecimal is 55 or 125)
                 {
@@ -340,10 +342,10 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
                 var option = card.Options.Find(x => x.ConditionId == choosenCondition);
 
                 var choosenInsuranceDecimal = player.Dossier.secondWorkphaseDossier.TransportInsuranceCost;
-                
+
                 //TODO getinsurances methods waardoor deze flexibel worden ingeladen
                 //check which insurance player has (normal || sportscar)
-                if (choosenInsuranceDecimal is 25 or 50 )
+                if (choosenInsuranceDecimal is 25 or 50)
                 {
                     result &= option.Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                     totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
@@ -364,13 +366,13 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "car_accident_traffic_jam");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var choosenInsuranceDecimal = player.Dossier.secondWorkphaseDossier.TransportInsuranceCost;
                 var options = card.Options;
-                
+
                 //TODO getinsurances methods waardoor deze flexibel worden ingeladen
                 //check which insurance player has (normal || sportscar)
-                if (choosenInsuranceDecimal is 25 or 50 )
+                if (choosenInsuranceDecimal is 25 or 50)
                 {
                     result &= options[0].Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                     totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
@@ -384,16 +386,16 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
                 {
                     //has franchise, no costs
                     result &= dataDecimal is 0 or null;
-                } 
+                }
                 else if (player.Dossier.secondWorkphaseDossier.AccidentInsuranceCost == 7)
                 {
                     //TODO does this make sense, what do they mean when they have an accidentinsurance? What costs are covered?
                     //does not make sense tha accident insurance covers everything but we keep it like this for now
-                    result &=dataDecimal is 0 or null;
+                    result &= dataDecimal is 0 or null;
                 }
                 //if 0 there is no car and also no car insurance, so no car accident is possible
                 //TODO is this logic okay or do they want it different?
-                
+
             }
 
             if (id == "inheritance")
@@ -430,7 +432,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "storm_damage_trampoline");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 if (player.Dossier.secondWorkphaseDossier.FamilyInsuranceCost > 0)
                 {
                     result &= dataDecimal is 0 or null;
@@ -441,14 +443,14 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
                     result &= option.Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                     totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
                 }
-                
+
             }
 
             if (id == "storm_damage_roof")
             {
                 var card = allEventcards.Find(x => x.Id == "storm_damage_roof");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 if (player.Dossier.secondWorkphaseDossier.FireInsuranceCost > 0)
                 {
                     result &= dataDecimal is 0 or null;
@@ -466,7 +468,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
                 var card = allEventcards.Find(x => x.Id == "dismissal");
                 if (card == null) throw new Exception("Card not found");
                 var test = card.Options[1].Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
-                
+
                 var option = Dossier.Character.StudentPhase.Options.FirstOrDefault(x => x.Id == "education");
                 if (option != default)
                 {
@@ -483,28 +485,28 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "promotion");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var option = Dossier.Character.StudentPhase.Options.FirstOrDefault(x => x.Id == "education");
                 if (option != default)
                 {
                     var filled = option.FilledSlots;
                     if (filled == 0) result &= dataDecimal is 0 or null;
-                    if (filled == 1) 
+                    if (filled == 1)
                     {
-                        result &= card.Options[1].Amount == dataDecimal; 
+                        result &= card.Options[1].Amount == dataDecimal;
                         totalImpactEventCards += dataDecimal;
-                        
+
                     }
 
                     if (filled == 2)
                     {
-                        result &= card.Options[2].Amount ==  dataDecimal; 
+                        result &= card.Options[2].Amount == dataDecimal;
                         totalImpactEventCards += dataDecimal;
                     }
 
                     if (filled == 3)
                     {
-                        result &= card.Options[3].Amount == dataDecimal; 
+                        result &= card.Options[3].Amount == dataDecimal;
                         totalImpactEventCards += dataDecimal;
                     }
                 }
@@ -513,24 +515,24 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             if (id == "new_job")
             {
                 var card = allEventcards.Find(x => x.Id == "new_job");
-                
+
                 var choosenCondition = eventcardsChoices[i].ConditionId;
                 var option = card.Options.Find(x => x.ConditionId == choosenCondition);
                 result &= option.Amount == dataDecimal;
                 totalImpactEventCards += dataDecimal;
-                
+
             }
 
             if (id == "illness_work")
             {
                 //momenteel is deze uit de mogelijkheden + uit de db
-                
+
                 //TODO toevoegen logica in json files
                 //TODO aanpassen model meet boolean
                 //TODO toevoegen aan dbfile
                 //TODO optie terug in gamesessionservice steken
                 //TODO logica schrijven hier
-                
+
             }
 
             if (id == "financial_support")
@@ -554,9 +556,9 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
                 var option = card.Options.Find(x => x.ConditionId == conditionId);
                 int amountOfpp = 1;
                 if (player.Dossier.secondWorkphaseDossier.NetSalaryPartner > 0) amountOfpp += 1; //TODO beter checken na update sarah partner
-                if (player.Dossier.LivingSituation.Children > 0) amountOfpp += player.Dossier.LivingSituation.Children; 
+                if (player.Dossier.LivingSituation.Children > 0) amountOfpp += player.Dossier.LivingSituation.Children;
                 //TODO nog aanpassen aan logica sarah
-                result &= (option.Amount * amountOfpp)  == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
+                result &= (option.Amount * amountOfpp) == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                 totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
             }
 
@@ -567,12 +569,12 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
 
                 var rentsHouse = true;
                 string? house_id = service.GetHouseId(data.HousingCost);
-                
+
                 if (house_id.StartsWith("buy")) rentsHouse = false;
-                
-                if (!rentsHouse) 
+
+                if (!rentsHouse)
                 {
-                    result &= (card.Options.Find(x => x.ConditionId == "owner")).Amount ==  ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
+                    result &= (card.Options.Find(x => x.ConditionId == "owner")).Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                     totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
                 }
                 else
@@ -585,7 +587,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "illness_dice");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var option = card.Options.Find(x => x.ConditionId == eventcardsChoices[i].ConditionId);
                 result &= option.Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                 totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
@@ -598,11 +600,11 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
 
                 if (player.Dossier.secondWorkphaseDossier.HospitalisationInsuranceCost > 0)
                 {
-                    result &=  dataDecimal is 0 or null;
+                    result &= dataDecimal is 0 or null;
                 }
                 else //no insurance
                 {
-                    result &= (card.Options.Find(x => x.ConditionId == "NO")).Amount ==  ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
+                    result &= (card.Options.Find(x => x.ConditionId == "NO")).Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                     totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
                 }
             }
@@ -611,7 +613,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "housing_costs_1");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var option = card.Options.Find(x => x.ConditionId == eventcardsChoices[i].ConditionId);
                 result &= option.Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                 totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
@@ -621,7 +623,7 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "housing_costs_2");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var option = card.Options.Find(x => x.ConditionId == eventcardsChoices[i].ConditionId);
                 result &= option.Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                 totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
@@ -631,17 +633,17 @@ public class SecondWorkphaseState(Dossier dossier, IMemoryAccessService service)
             {
                 var card = allEventcards.Find(x => x.Id == "depression");
                 if (card == null) throw new Exception("Card not found");
-                
+
                 var option = card.Options.Find(x => x.ConditionId == eventcardsChoices[i].ConditionId);
                 result &= option.Amount == ((dataDecimal > 0) ? dataDecimal * (-1) : dataDecimal);
                 totalImpactEventCards -= (dataDecimal < 0) ? dataDecimal * (-1) : dataDecimal;
             }
         }
-        
+
         //TOTAL 3 + ((netsalary * 240)/2) - eventcards
         var total4 = data.Total3 + ((data.RemainingBudget * 240)) + totalImpactEventCards;
         result &= total4 == data.Total4;
-        
+
         return result;
     }
 }

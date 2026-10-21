@@ -183,7 +183,9 @@
     "partner_support": "SOUTIEN FINANCIER DES PARENTS DU/DE LA PARTENAIRE",
     "partner_wage": "SALAIRE DU PARTENAIRE",
     "phase_1_small": "Période de vie active 1",
-    "phase_2_small": "Période de vie active 2"
+    "phase_2_small": "Période de vie active 2",
+    "phase_1_factor": "• Facteur dans période 1",
+    "phase_2_factor": "• Facteur dans période 2"
   },
   "home_player_page": {
     "title": "Rejoindre une partie",
